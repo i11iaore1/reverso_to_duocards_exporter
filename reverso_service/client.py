@@ -13,7 +13,7 @@ class GetFavResponse(BaseModel):
 
 
 @with_reverso_auth
-def get_favorites(reverso_auth: str, amount: int = 50) -> list[ReversoCardFull]:
+def get_favorites(reverso_auth: str, amount: int) -> list[ReversoCardFull]:
     params = {
         "order": 10,
         "start": 0,
