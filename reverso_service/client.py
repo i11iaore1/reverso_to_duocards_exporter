@@ -1,5 +1,7 @@
 from curl_cffi import requests
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+
+from reverso_service.schemas import ReversoCard
 
 from .auth import with_reverso_auth
 
@@ -7,14 +9,8 @@ BASE_REVERSO_URL = "https://context.reverso.net"
 REVERSO_FAV_URL = f"{BASE_REVERSO_URL}/bst-web-user/user/favourites"
 
 
-class ReversoCard(BaseModel):
-    id: int = Field(validation_alias="id")
-    original: str = Field(validation_alias="srcText")
-    translation: str = Field(validation_alias="trgText")
-
-
-class ReversoCardList(BaseModel):
-    cards: list[ReversoCard] = Field(validation_alias="results")
+class GetFavResponse(BaseModel):
+    results: list[ReversoCard]
 
 
 @with_reverso_auth
@@ -23,9 +19,6 @@ def get_favorites(reverso_auth: str, amount: int = 50) -> list[ReversoCard]:
         "order": 10,
         "start": 0,
         "length": amount,
-        "includeSyn": "NO",
-        "includeDef": "NO",
-        "learningInfo": False,
     }
 
     response = requests.get(
@@ -36,7 +29,7 @@ def get_favorites(reverso_auth: str, amount: int = 50) -> list[ReversoCard]:
     )
     result = response.content.decode("utf-8")
 
-    return ReversoCardList.model_validate_json(result).cards
+    return GetFavResponse.model_validate_json(result).results
 
 
 @with_reverso_auth
