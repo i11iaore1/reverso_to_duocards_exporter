@@ -22,6 +22,10 @@ def move(amount: int):
 
     asyncio.run(duocards_service.create_cards(duocards_cards))
 
+    reverso_service.delete_favorites(
+        [reverso_card.id for reverso_card in reverso_cards]
+    )
+
 
 if __name__ == "__main__":
     app()
